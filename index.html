@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>จองคิวร้านตัดผม</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { prompt: ['Prompt', 'sans-serif'] },
+        colors: {
+          amber: {
+            400: '#fbbf24',
+            500: '#f59e0b',
+          }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Prompt', sans-serif; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  @keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    70% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  .pop-in { animation: popIn 0.45s ease-out; }
+  @keyframes fadeUp {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.35s ease-out; }
+</style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen">
+
+<div class="max-w-2xl mx-auto px-4 py-6 sm:py-10">
+
+  <!-- Header -->
+  <header class="text-center mb-8">
+    <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 mb-3 shadow-lg shadow-amber-500/20">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-zinc-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="6" cy="6" r="3"></circle>
+        <circle cx="6" cy="18" r="3"></circle>
+        <line x1="20" y1="4" x2="8.12" y2="15.88"></line>
+        <line x1="14.47" y1="14.48" x2="20" y2="20"></line>
+        <line x1="8.12" y1="8.12" x2="12" y2="12"></line>
+      </svg>
+    </div>
+    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">The Gentleman's Cut</h1>
+    <p class="text-zinc-400 text-sm mt-1">จองคิวตัดผมง่ายๆ ใน 3 ขั้นตอน</p>
+  </header>
+
+  <!-- Stepper -->
+  <div class="flex items-center justify-center mb-8 select-none" id="stepper">
+    <!-- filled by JS -->
+  </div>
+
+  <!-- Steps container -->
+  <main class="bg-zinc-900/70 border border-zinc-800 rounded-3xl p-5 sm:p-7 shadow-2xl shadow-black/40 backdrop-blur">
+
+    <!-- STEP 1: service + date + time -->
+    <section id="step-1" class="space-y-7">
+      <div>
+        <h2 class="text-lg font-semibold mb-1">เลือกบริการ</h2>
+        <p class="text-zinc-500 text-sm mb-4">เลือกบริการที่ต้องการ</p>
+        <div id="service-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-semibold mb-1">เลือกวันที่</h2>
+        <p class="text-zinc-500 text-sm mb-4">เลื่อนเพื่อดูวันที่ถัดไป</p>
+        <div id="date-scroll" class="flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-semibold mb-1">เลือกเวลา</h2>
+        <p class="text-zinc-500 text-sm mb-4" id="time-hint">กรุณาเลือกวันที่ก่อน</p>
+        <div id="time-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2"></div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button id="to-step-2" disabled
+          class="px-6 py-3 rounded-xl bg-amber-500 text-zinc-950 font-semibold disabled:bg-zinc-800 disabled:text-zinc-600 disabled:cursor-not-allowed transition-colors hover:bg-amber-400 disabled:hover:bg-zinc-800">
+          ถัดไป →
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 2: contact info -->
+    <section id="step-2" class="hidden space-y-5">
+      <div>
+        <h2 class="text-lg font-semibold mb-1">ข้อมูลติดต่อ</h2>
+        <p class="text-zinc-500 text-sm mb-4">กรอกชื่อและเบอร์โทรเพื่อยืนยันคิว</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-zinc-300 mb-1.5">ชื่อ-นามสกุล</label>
+        <input id="input-name" type="text" placeholder="เช่น สมชาย ใจดี"
+          class="w-full px-4 py-3 rounded-xl bg-zinc-800/70 border border-zinc-700 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition placeholder:text-zinc-500">
+        <p id="err-name" class="hidden text-red-400 text-xs mt-1.5">กรุณากรอกชื่อ-นามสกุล</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-zinc-300 mb-1.5">เบอร์โทรศัพท์</label>
+        <input id="input-phone" type="tel" placeholder="0812345678" maxlength="10"
+          class="w-full px-4 py-3 rounded-xl bg-zinc-800/70 border border-zinc-700 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition placeholder:text-zinc-500">
+        <p id="err-phone" class="hidden text-red-400 text-xs mt-1.5">กรุณากรอกเบอร์โทร 10 หลัก ขึ้นต้นด้วย 0</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-zinc-300 mb-1.5">หมายเหตุ <span class="text-zinc-500 font-normal">(ไม่บังคับ)</span></label>
+        <textarea id="input-note" rows="2" placeholder="เช่น ทรงที่ต้องการ, ช่างที่เคยใช้บริการ"
+          class="w-full px-4 py-3 rounded-xl bg-zinc-800/70 border border-zinc-700 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition placeholder:text-zinc-500 resize-none"></textarea>
+      </div>
+
+      <div class="flex justify-between pt-2">
+        <button id="back-to-1" class="px-6 py-3 rounded-xl bg-zinc-800 text-zinc-200 font-semibold hover:bg-zinc-700 transition-colors">← ย้อนกลับ</button>
+        <button id="to-step-3" class="px-6 py-3 rounded-xl bg-amber-500 text-zinc-950 font-semibold hover:bg-amber-400 transition-colors">ถัดไป →</button>
+      </div>
+    </section>
+
+    <!-- STEP 3: confirm -->
+    <section id="step-3" class="hidden space-y-5">
+      <div>
+        <h2 class="text-lg font-semibold mb-1">ยืนยันการจอง</h2>
+        <p class="text-zinc-500 text-sm mb-4">ตรวจสอบรายละเอียดก่อนยืนยัน</p>
+      </div>
+
+      <div class="bg-zinc-800/50 border border-zinc-700 rounded-2xl divide-y divide-zinc-700/70 overflow-hidden">
+        <div class="flex justify-between px-4 py-3">
+          <span class="text-zinc-400 text-sm">บริการ</span>
+          <span class="font-medium text-right" id="sum-service">-</span>
+        </div>
+        <div class="flex justify-between px-4 py-3">
+          <span class="text-zinc-400 text-sm">วันที่</span>
+          <span class="font-medium text-right" id="sum-date">-</span>
+        </div>
+        <div class="flex justify-between px-4 py-3">
+          <span class="text-zinc-400 text-sm">เวลา</span>
+          <span class="font-medium text-right" id="sum-time">-</span>
+        </div>
+        <div class="flex justify-between px-4 py-3">
+          <span class="text-zinc-400 text-sm">ระยะเวลา</span>
+          <span class="font-medium text-right" id="sum-duration">-</span>
+        </div>
+        <div class="flex justify-between px-4 py-3">
+          <span class="text-zinc-400 text-sm">ราคา</span>
+          <span class="font-medium text-right text-amber-400" id="sum-price">-</span>
+        </div>
+        <div class="flex justify-between px-4 py-3">
+          <span class="text-zinc-400 text-sm">ชื่อ</span>
+          <span class="font-medium text-right" id="sum-name">-</span>
+        </div>
+        <div class="flex justify-between px-4 py-3">
+          <span class="text-zinc-400 text-sm">เบอร์โทร</span>
+          <span class="font-medium text-right" id="sum-phone">-</span>
+        </div>
+      </div>
+
+      <div class="flex justify-between pt-2">
+        <button id="back-to-2" class="px-6 py-3 rounded-xl bg-zinc-800 text-zinc-200 font-semibold hover:bg-zinc-700 transition-colors">← แก้ไขข้อมูล</button>
+        <button id="confirm-booking" class="px-6 py-3 rounded-xl bg-amber-500 text-zinc-950 font-semibold hover:bg-amber-400 transition-colors">ยืนยันการจอง</button>
+      </div>
+    </section>
+
+    <!-- STEP 4: success -->
+    <section id="step-4" class="hidden text-center py-6 space-y-5">
+      <div class="pop-in inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-500/15 border-2 border-emerald-500 mb-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold fade-up">จองคิวสำเร็จ!</h2>
+      <p class="text-zinc-400 fade-up">เราได้บันทึกการจองของคุณเรียบร้อยแล้ว</p>
+      <div class="fade-up inline-block bg-zinc-800/70 border border-zinc-700 rounded-xl px-5 py-3">
+        <p class="text-xs text-zinc-500 mb-0.5">เลขที่การจอง</p>
+        <p class="text-xl font-bold text-amber-400 tracking-wider" id="booking-code">-</p>
+      </div>
+      <div class="fade-up bg-zinc-800/50 border border-zinc-700 rounded-2xl divide-y divide-zinc-700/70 overflow-hidden text-left max-w-sm mx-auto">
+        <div class="flex justify-between px-4 py-3">
+          <span class="text-zinc-400 text-sm">บริการ</span>
+          <span class="font-medium text-right" id="done-service">-</span>
+        </div>
+        <div class="flex justify-between px-4 py-3">
+          <span class="text-zinc-400 text-sm">วันเวลา</span>
+          <span class="font-medium text-right" id="done-datetime">-</span>
+        </div>
+      </div>
+      <div class="pt-3">
+        <button id="new-booking" class="px-6 py-3 rounded-xl bg-amber-500 text-zinc-950 font-semibold hover:bg-amber-400 transition-colors">จองคิวใหม่</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="text-center text-zinc-600 text-xs mt-6">
+    ข้อมูลทั้งหมดเป็น Mock Data สำหรับสาธิตเท่านั้น
+  </footer>
+</div>
+
+<script>
+  // ---------- Mock data ----------
+  const SERVICES = [
+    { id: 'cut',      name: 'ตัดผม',        duration: 30, price: 300, icon: '✂️' },
+    { id: 'cutwash',  name: 'สระ + ตัด',    duration: 45, price: 450, icon: '💇' },
+    { id: 'shave',    name: 'โกนหนวด',      duration: 20, price: 200, icon: '🪒' },
+    { id: 'color',    name: 'ทำสีผม',       duration: 60, price: 800, icon: '🎨' },
+    { id: 'perm',     name: 'ดัดผม',        duration: 90, price: 900, icon: '🌀' },
+    { id: 'kids',     name: 'ตัดผมเด็ก',    duration: 25, price: 250, icon: '🧒' },
+  ];
+
+  const THAI_DAYS = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+  const THAI_MONTHS = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+
+  // fixed "today" so the mock data is deterministic
+  const TODAY = new Date(2026, 7, 18); // 18 Aug 2026
+
+  function buildDates(count) {
+    const dates = [];
+    for (let i = 0; i < count; i++) {
+      const d = new Date(TODAY);
+      d.setDate(TODAY.getDate() + i);
+      dates.push(d);
+    }
+    return dates;
+  }
+
+  const DATES = buildDates(14);
+
+  // deterministic mock "booked" slots per date so each day looks a little different
+  function isSlotBooked(dateIndex, slotIndex) {
+    return (dateIndex * 3 + slotIndex * 7) % 5 === 0;
+  }
+
+  const TIME_SLOTS = [];
+  for (let h = 9; h <= 19; h++) {
+    TIME_SLOTS.push(`${String(h).padStart(2, '0')}:00`);
+    if (h < 19) TIME_SLOTS.push(`${String(h).padStart(2, '0')}:30`);
+  }
+
+  // ---------- State ----------
+  const state = {
+    service: null,
+    dateIndex: null,
+    time: null,
+    name: '',
+    phone: '',
+    note: '',
+  };
+
+  const STEP_LABELS = ['บริการ & เวลา', 'ข้อมูลติดต่อ', 'ยืนยัน'];
+
+  // ---------- Stepper ----------
+  function renderStepper(current) {
+    const el = document.getElementById('stepper');
+    el.innerHTML = '';
+    STEP_LABELS.forEach((label, i) => {
+      const stepNum = i + 1;
+      const isDone = stepNum < current;
+      const isActive = stepNum === current;
+
+      const wrap = document.createElement('div');
+      wrap.className = 'flex items-center';
+
+      const circle = document.createElement('div');
+      circle.className = `w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold border-2 transition-colors ${
+        isDone ? 'bg-amber-500 border-amber-500 text-zinc-950' :
+        isActive ? 'border-amber-500 text-amber-400 bg-zinc-900' :
+        'border-zinc-700 text-zinc-600 bg-zinc-900'
+      }`;
+      circle.innerHTML = isDone
+        ? '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+        : String(stepNum);
+
+      const textWrap = document.createElement('div');
+      textWrap.className = 'ml-2 mr-3 hidden sm:block';
+      textWrap.innerHTML = `<span class="text-xs font-medium ${isActive ? 'text-amber-400' : isDone ? 'text-zinc-300' : 'text-zinc-600'}">${label}</span>`;
+
+      wrap.appendChild(circle);
+      wrap.appendChild(textWrap);
+      el.appendChild(wrap);
+
+      if (stepNum < STEP_LABELS.length) {
+        const line = document.createElement('div');
+        line.className = `w-6 sm:w-10 h-0.5 mx-1 ${isDone ? 'bg-amber-500' : 'bg-zinc-700'}`;
+        el.appendChild(line);
+      }
+    });
+  }
+
+  // ---------- Step 1: services ----------
+  function renderServices() {
+    const grid = document.getElementById('service-grid');
+    grid.innerHTML = '';
+    SERVICES.forEach(svc => {
+      const selected = state.service === svc.id;
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = `text-left p-3 rounded-xl border-2 transition-colors ${
+        selected ? 'border-amber-500 bg-amber-500/10' : 'border-zinc-700 bg-zinc-800/50 hover:border-zinc-600'
+      }`;
+      card.innerHTML = `
+        <div class="text-2xl mb-1">${svc.icon}</div>
+        <div class="font-semibold text-sm">${svc.name}</div>
+        <div class="text-xs text-zinc-400 mt-0.5">${svc.duration} นาที</div>
+        <div class="text-xs font-semibold ${selected ? 'text-amber-400' : 'text-zinc-300'} mt-1">${svc.price} บาท</div>
+      `;
+      card.addEventListener('click', () => {
+        state.service = svc.id;
+        renderServices();
+        updateStep1NextButton();
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  // ---------- Step 1: dates ----------
+  function renderDates() {
+    const wrap = document.getElementById('date-scroll');
+    wrap.innerHTML = '';
+    DATES.forEach((d, idx) => {
+      const selected = state.dateIndex === idx;
+      const isToday = idx === 0;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `flex-shrink-0 flex flex-col items-center justify-center w-16 h-20 rounded-xl border-2 transition-colors ${
+        selected ? 'border-amber-500 bg-amber-500/10' : 'border-zinc-700 bg-zinc-800/50 hover:border-zinc-600'
+      }`;
+      btn.innerHTML = `
+        <span class="text-[11px] ${selected ? 'text-amber-400' : 'text-zinc-400'}">${isToday ? 'วันนี้' : THAI_DAYS[d.getDay()]}</span>
+        <span class="text-lg font-bold mt-0.5 ${selected ? 'text-amber-400' : 'text-zinc-100'}">${d.getDate()}</span>
+        <span class="text-[11px] ${selected ? 'text-amber-400' : 'text-zinc-500'}">${THAI_MONTHS[d.getMonth()]}</span>
+      `;
+      btn.addEventListener('click', () => {
+        state.dateIndex = idx;
+        state.time = null;
+        renderDates();
+        renderTimeSlots();
+        updateStep1NextButton();
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
+  // ---------- Step 1: time slots ----------
+  function renderTimeSlots() {
+    const grid = document.getElementById('time-grid');
+    const hint = document.getElementById('time-hint');
+    grid.innerHTML = '';
+
+    if (state.dateIndex === null) {
+      hint.textContent = 'กรุณาเลือกวันที่ก่อน';
+      return;
+    }
+    hint.textContent = 'ช่วงเวลาที่ว่างสำหรับวันที่เลือก';
+
+    TIME_SLOTS.forEach((slot, idx) => {
+      const booked = isSlotBooked(state.dateIndex, idx);
+      const selected = state.time === slot;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.disabled = booked;
+      btn.className = `py-2.5 rounded-lg text-sm font-medium border transition-colors ${
+        booked ? 'border-zinc-800 bg-zinc-900 text-zinc-700 line-through cursor-not-allowed' :
+        selected ? 'border-amber-500 bg-amber-500 text-zinc-950' :
+        'border-zinc-700 bg-zinc-800/50 hover:border-zinc-600 text-zinc-200'
+      }`;
+      btn.textContent = slot;
+      if (!booked) {
+        btn.addEventListener('click', () => {
+          state.time = slot;
+          renderTimeSlots();
+          updateStep1NextButton();
+        });
+      }
+      grid.appendChild(btn);
+    });
+  }
+
+  function updateStep1NextButton() {
+    const btn = document.getElementById('to-step-2');
+    btn.disabled = !(state.service && state.dateIndex !== null && state.time);
+  }
+
+  // ---------- Validation ----------
+  function validatePhone(phone) {
+    return /^0\d{9}$/.test(phone);
+  }
+
+  // ---------- Navigation ----------
+  function goToStep(n) {
+    for (let i = 1; i <= 4; i++) {
+      document.getElementById(`step-${i}`).classList.toggle('hidden', i !== n);
+    }
+    if (n <= 3) {
+      document.getElementById('stepper').classList.remove('hidden');
+      renderStepper(n);
+    } else {
+      document.getElementById('stepper').classList.add('hidden');
+    }
+  }
+
+  function formatDate(idx) {
+    const d = DATES[idx];
+    return `วัน${THAI_DAYS[d.getDay()].replace('.', '')}ที่ ${d.getDate()} ${THAI_MONTHS[d.getMonth()]} ${d.getFullYear() + 543}`;
+  }
+
+  function renderSummary() {
+    const svc = SERVICES.find(s => s.id === state.service);
+    document.getElementById('sum-service').textContent = svc.name;
+    document.getElementById('sum-date').textContent = formatDate(state.dateIndex);
+    document.getElementById('sum-time').textContent = state.time + ' น.';
+    document.getElementById('sum-duration').textContent = svc.duration + ' นาที';
+    document.getElementById('sum-price').textContent = svc.price + ' บาท';
+    document.getElementById('sum-name').textContent = state.name;
+    document.getElementById('sum-phone').textContent = state.phone;
+  }
+
+  function generateBookingCode() {
+    const d = DATES[state.dateIndex];
+    const datePart = `${String(d.getDate()).padStart(2,'0')}${String(d.getMonth()+1).padStart(2,'0')}`;
+    const randPart = Math.floor(1000 + Math.random() * 9000);
+    return `BK${datePart}-${randPart}`;
+  }
+
+  function resetAll() {
+    state.service = null;
+    state.dateIndex = null;
+    state.time = null;
+    state.name = '';
+    state.phone = '';
+    state.note = '';
+    document.getElementById('input-name').value = '';
+    document.getElementById('input-phone').value = '';
+    document.getElementById('input-note').value = '';
+    document.getElementById('err-name').classList.add('hidden');
+    document.getElementById('err-phone').classList.add('hidden');
+    renderServices();
+    renderDates();
+    renderTimeSlots();
+    updateStep1NextButton();
+    goToStep(1);
+  }
+
+  // ---------- Wire up events ----------
+  document.getElementById('to-step-2').addEventListener('click', () => {
+    goToStep(2);
+  });
+
+  document.getElementById('back-to-1').addEventListener('click', () => {
+    goToStep(1);
+  });
+
+  document.getElementById('to-step-3').addEventListener('click', () => {
+    const name = document.getElementById('input-name').value.trim();
+    const phone = document.getElementById('input-phone').value.trim();
+    const note = document.getElementById('input-note').value.trim();
+
+    let valid = true;
+    if (!name) {
+      document.getElementById('err-name').classList.remove('hidden');
+      valid = false;
+    } else {
+      document.getElementById('err-name').classList.add('hidden');
+    }
+
+    if (!validatePhone(phone)) {
+      document.getElementById('err-phone').classList.remove('hidden');
+      valid = false;
+    } else {
+      document.getElementById('err-phone').classList.add('hidden');
+    }
+
+    if (!valid) return;
+
+    state.name = name;
+    state.phone = phone;
+    state.note = note;
+    renderSummary();
+    goToStep(3);
+  });
+
+  document.getElementById('back-to-2').addEventListener('click', () => {
+    goToStep(2);
+  });
+
+  document.getElementById('confirm-booking').addEventListener('click', () => {
+    const svc = SERVICES.find(s => s.id === state.service);
+    document.getElementById('booking-code').textContent = generateBookingCode();
+    document.getElementById('done-service').textContent = svc.name;
+    document.getElementById('done-datetime').textContent = `${formatDate(state.dateIndex)} เวลา ${state.time} น.`;
+    goToStep(4);
+  });
+
+  document.getElementById('new-booking').addEventListener('click', () => {
+    resetAll();
+  });
+
+  // live-clear validation errors while typing
+  document.getElementById('input-name').addEventListener('input', e => {
+    if (e.target.value.trim()) document.getElementById('err-name').classList.add('hidden');
+  });
+  document.getElementById('input-phone').addEventListener('input', e => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+    if (validatePhone(e.target.value)) document.getElementById('err-phone').classList.add('hidden');
+  });
+
+  // ---------- Init ----------
+  renderServices();
+  renderDates();
+  renderTimeSlots();
+  updateStep1NextButton();
+  goToStep(1);
+</script>
+
+</body>
+</html>
