@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+model Booking {
+  id             String        @id @default(cuid())
+  bookingCode    String        @unique
+  serviceId      String
+  date           DateTime      @db.Date
+  startSlotIndex Int
+  slotCount      Int
+  name           String
+  phone          String
+  note           String?
+  status         BookingStatus @default(CONFIRMED)
+  createdAt      DateTime      @default(now())
+  cancelledAt    DateTime?
+
+  @@index([date, status])
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
