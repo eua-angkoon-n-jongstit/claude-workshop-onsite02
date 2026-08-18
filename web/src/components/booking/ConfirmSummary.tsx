@@ -1,22 +1,24 @@
 import type { Service } from "@/lib/booking/types";
-import { formatThaiDate } from "@/lib/booking/format";
+import { formatThaiDateValue } from "@/lib/booking/format";
 
 export default function ConfirmSummary({
   service,
-  dateIndex,
+  date,
   time,
   name,
   phone,
   onBack,
   onConfirm,
+  isSubmitting = false,
 }: {
   service: Service;
-  dateIndex: number;
+  date: Date;
   time: string;
   name: string;
   phone: string;
   onBack: () => void;
   onConfirm: () => void;
+  isSubmitting?: boolean;
 }) {
   return (
     <section className="space-y-5">
@@ -32,7 +34,7 @@ export default function ConfirmSummary({
         </div>
         <div className="flex justify-between px-4 py-3">
           <span className="text-zinc-400 text-sm">วันที่</span>
-          <span className="font-medium text-right">{formatThaiDate(dateIndex)}</span>
+          <span className="font-medium text-right">{formatThaiDateValue(date)}</span>
         </div>
         <div className="flex justify-between px-4 py-3">
           <span className="text-zinc-400 text-sm">เวลา</span>
@@ -67,9 +69,10 @@ export default function ConfirmSummary({
         <button
           type="button"
           onClick={onConfirm}
-          className="px-6 py-3 rounded-xl bg-amber-500 text-zinc-950 font-semibold hover:bg-amber-400 transition-colors"
+          disabled={isSubmitting}
+          className="px-6 py-3 rounded-xl bg-amber-500 text-zinc-950 font-semibold hover:bg-amber-400 disabled:bg-zinc-800 disabled:text-zinc-600 disabled:cursor-not-allowed transition-colors"
         >
-          ยืนยันการจอง
+          {isSubmitting ? "กำลังบันทึก..." : "ยืนยันการจอง"}
         </button>
       </div>
     </section>

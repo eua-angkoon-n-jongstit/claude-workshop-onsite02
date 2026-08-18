@@ -1,15 +1,15 @@
 import type { Service } from "@/lib/booking/types";
-import { formatThaiDate } from "@/lib/booking/format";
+import { formatThaiDateValue } from "@/lib/booking/format";
 
 export default function SuccessScreen({
   service,
-  dateIndex,
+  date,
   time,
   bookingCode,
   onNewBooking,
 }: {
   service: Service;
-  dateIndex: number;
+  date: Date;
   time: string;
   bookingCode: string;
   onNewBooking: () => void;
@@ -44,7 +44,7 @@ export default function SuccessScreen({
         <div className="flex justify-between px-4 py-3">
           <span className="text-zinc-400 text-sm">วันเวลา</span>
           <span className="font-medium text-right">
-            {formatThaiDate(dateIndex)} เวลา {time} น.
+            {formatThaiDateValue(date)} เวลา {time} น.
           </span>
         </div>
       </div>

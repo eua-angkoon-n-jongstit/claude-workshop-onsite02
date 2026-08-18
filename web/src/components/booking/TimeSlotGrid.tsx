@@ -2,27 +2,30 @@ export default function TimeSlotGrid({
   slots,
   dateIndex,
   selected,
-  isBooked,
+  availability,
   onSelect,
 }: {
   slots: string[];
   dateIndex: number | null;
   selected: string | null;
-  isBooked: (dateIndex: number, slotIndex: number) => boolean;
+  availability: boolean[] | null;
   onSelect: (time: string) => void;
 }) {
   const hint =
     dateIndex === null
       ? "กรุณาเลือกวันที่ก่อน"
-      : "ช่วงเวลาที่ว่างสำหรับวันที่เลือก";
+      : availability === null
+        ? "กำลังโหลดช่วงเวลาที่ว่าง..."
+        : "ช่วงเวลาที่ว่างสำหรับวันที่เลือก";
 
   return (
     <>
       <p className="text-zinc-500 text-sm mb-4">{hint}</p>
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
         {dateIndex !== null &&
+          availability !== null &&
           slots.map((slot, idx) => {
-            const booked = isBooked(dateIndex, idx);
+            const booked = !availability[idx];
             const isSelected = selected === slot;
             return (
               <button

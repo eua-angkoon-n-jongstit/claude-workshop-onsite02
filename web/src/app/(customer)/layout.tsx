@@ -27,7 +27,7 @@ export default function CustomerLayout({ children }: LayoutProps<"/">) {
       {children}
 
       <footer className="text-center text-zinc-600 text-xs mt-6">
-        ข้อมูลทั้งหมดเป็น Mock Data สำหรับสาธิตเท่านั้น
+        เปิดให้บริการทุกวัน 09:00 - 19:00 น.
       </footer>
     </div>
   );
